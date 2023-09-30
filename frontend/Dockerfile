@@ -1,16 +1,17 @@
-FROM node:12
+# frontend/Dockerfile
 
-ADD package.json /package.json
-
-ENV NODE_PATH=/node_modules
-ENV PATH=$PATH:/node_modules/.bin
-RUN npm install
-
+# Step 1: Build the React application
+FROM node:14 AS build
 WORKDIR /app
-ADD . /app
+COPY package*.json ./
+RUN npm install
+COPY . ./
+RUN npm run build
+RUN npm install -g serve
 
-EXPOSE 8000
-EXPOSE 35729
-
-ENTRYPOINT ["/bin/bash", "/app/run.sh"]
-CMD ["start"]
+RUN serve -s build -l 8080
+# Step 2: Serve the React application from Nginx
+FROM nginx:alpine
+COPY --from=build /app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
