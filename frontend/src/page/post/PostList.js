@@ -1,36 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import PostModal from './PostModal'; // 이 부분은 실제 PostModal 컴포넌트의 경로에 따라 변경해야 합니다.
+import { Card, CardActionArea, CardContent, Typography, Grid, Box } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 
-const PostList = props => {
-    const [dataList, setDataList] = useState([]);
-    const [selectedPost, setSelectedPost] = useState(null);
+const PostList = () => {
+    const [posts, setPosts] = useState([]);
 
     useEffect(() => {
         axios.get('http://localhost:8000/posts/')
             .then(response => {
-                setDataList(response.data);
+                setPosts(response.data);
             })
             .catch(error => {
-                console.error("There was an error fetching the posts!", error);
+                console.error("게시글을 불러오는데 오류가 발생했습니다!", error);
             });
     }, []);
 
-    const handlePostClick = (post) => {
-        setSelectedPost(post);
-    }
-
     return (
-        <div>
-            {dataList.map((post, index) => (
-                <div key={index} onClick={() => handlePostClick(post)}>
-                    <h3>{post.title}</h3>
-
-                </div>
-            ))}
-            {selectedPost && <PostModal post={selectedPost} onClose={() => setSelectedPost(null)} />}
-        </div>
+        <Box mt={4} mb={4}>
+ 
+            <Grid container spacing={4} justifyContent="center">
+                {posts.map(post => (
+                    <Grid item key={post.no} xs={12} sm={6} md={4}>
+                        <Card>
+                            <CardActionArea component={RouterLink} to={`/post/${post.no}`}>
+                                <CardContent>
+                                    <Typography variant="h5" component="h2">
+                                        {post.title}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                ))}
+            </Grid>
+        </Box>
     );
-}
+};
 
 export default PostList;

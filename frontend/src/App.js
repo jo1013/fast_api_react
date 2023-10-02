@@ -1,19 +1,19 @@
-
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import PostMain from './page/post/PostMain';
-import PostView from './page/post/PostView';
-import PostCreate from './page/post/PostCreate'; // 위에서 생성한 컴포넌트를 임포트합니다.
+import PostDetail from './page/post/PostDetail';  // 위에서 만든 PostDetail 컴포넌트를 임포트합니다.
 
 function App() {
-  return (
-    <div className="App">
-      <BrowserRouter>
-        <Route exact path='/postView/:no' component={PostView} />
-        <Route exact path='/postCreate' component={PostCreate} /> {/* 새로운 라우트 추가 */}
-        <Route exact path='/' component={PostMain} />
-      </BrowserRouter>
-    </div>
-  );
+    return (
+        <div className="App">
+            <BrowserRouter>
+                <Switch>
+                    <Route exact path='/post/:id' component={PostDetail} />
+                    <Route exact path='/' component={PostMain} />
+                    {/* 필요한 다른 라우트들을 여기에 추가 */}
+                </Switch>
+            </BrowserRouter>
+        </div>
+    );
 }
 
 export default App;

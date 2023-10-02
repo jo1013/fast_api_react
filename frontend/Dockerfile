@@ -8,9 +8,11 @@ RUN npm install \
     && npm install @babel/plugin-proposal-private-property-in-object axios
 COPY . ./
 RUN npm ci
-RUN npm install @mui/material
+RUN npm install @mui/material @emotion/react @emotion/styled
 RUN npm install @mui/icons-material
 RUN npm install @babel/plugin-proposal-private-property-in-object @emotion/styled @emotion/react
+RUN npm install react-router-dom
+
 
 RUN npm run build
 # Step 2: Serve the React application from Nginx
