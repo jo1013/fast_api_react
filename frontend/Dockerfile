@@ -4,14 +4,18 @@
 FROM node:14 AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install \
+    && npm install @babel/plugin-proposal-private-property-in-object axios
 COPY . ./
-RUN npm run build
-RUN npm install -g serve
+RUN npm ci
+RUN npm install @mui/material
+RUN npm install @mui/icons-material
+RUN npm install @babel/plugin-proposal-private-property-in-object @emotion/styled @emotion/react
 
-RUN serve -s build -l 8080
+RUN npm run build
 # Step 2: Serve the React application from Nginx
 FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
 EXPOSE 80
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 CMD ["nginx", "-g", "daemon off;"]

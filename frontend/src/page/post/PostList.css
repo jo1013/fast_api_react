@@ -1,0 +1,12 @@
+/* 스타일 파일 (예: App.css 또는 PostList.css) */
+.postItem {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.postItem:hover {
+    background-color: #f7f7f7;
+}

@@ -1,2 +1,6 @@
 fastapi
 uvicorn
+fastapi[all]
+sqlalchemy
+psycopg2
+pydantic
