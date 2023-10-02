@@ -3,7 +3,7 @@
 
 
 
-
+```
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,                -- 고유한 사용자 ID
     username VARCHAR(255) NOT NULL UNIQUE,-- 사용자 이름 (고유해야 함)
@@ -17,12 +17,13 @@ CREATE TABLE users (
     status VARCHAR(50) DEFAULT 'active',  -- 계정 상태 (예: active, banned, deactivated)
     role VARCHAR(50) DEFAULT 'user'       -- 계정 권한 (예: user, admin, moderator)
 );
-
+```
+```
 CREATE INDEX idx_users_email ON users(email); -- 이메일로의 빠른 조회를 위한 인덱스
+```
 
 
-
-
+```
 CREATE TABLE post_likes (
     id SERIAL PRIMARY KEY,                  -- 고유한 ID
     user_id INT NOT NULL,                  -- 사용자 ID
@@ -32,4 +33,4 @@ CREATE TABLE post_likes (
     FOREIGN KEY (posts_no) REFERENCES posts(no),  -- 'posts' 테이블의 게시글 번호를 참조
     UNIQUE (user_id, posts_no)             -- 한 사용자가 한 게시물에 대해 좋아요를 중복으로 누르지 못하게 제한
 );
-
+```
