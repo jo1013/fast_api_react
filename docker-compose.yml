@@ -23,6 +23,10 @@ services:
       - redis
     volumes:
       - ./backend:/app
+    ports:
+      - "8000:8000"  # 호스트 포트와 컨테이너 포트를 매핑합니다.
+
+
 
   frontend:
     ports:
@@ -37,14 +41,16 @@ services:
 
 
   db:
-    image: postgres:latest
+    image: postgres:16.0-alpine
+    ports:
+      - "5432:5432" # 호스트 포트와 컨테이너 포트를 매핑합니다.
     container_name: postgres_db
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ~/work_space/react-fastapi/pg_data:/var/lib/postgresql/data
 
   redis:
     image: redis:latest
