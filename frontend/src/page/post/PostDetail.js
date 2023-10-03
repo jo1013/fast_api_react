@@ -2,6 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styled from '@emotion/styled';
 import { Button } from '@mui/material';
+import { useParams } from 'react-router-dom';
+
+const MetadataContainer = styled.div`
+    margin-top: 20px;
+
+    div {
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+`;
 
 const PostContainer = styled.div`
     padding: 20px;
@@ -32,10 +42,10 @@ const LikeButton = styled(Button)`
 
 const PostDetail = (props) => {
     const [post, setPost] = useState(null);
-    const postId = props.match.params.id;
+    const { postId } = useParams(); // 여기에서 postId를 가져옵니다
 
     useEffect(() => {
-        axios.get(`http://localhost:8000/posts/${postId}`)
+        axios.get(`http://localhost:8000/post/${postId}`)
             .then(response => {
                 setPost(response.data);
             })
@@ -45,7 +55,7 @@ const PostDetail = (props) => {
     }, [postId]);
 
     const handleLike = () => {
-        axios.post(`http://localhost:8000/posts/${postId}/like`)
+        axios.post(`http://localhost:8000/post/${postId}/like`)
             .then(response => {
                 // If the backend returns the updated post object, use it.
                 if(response.data && response.data.likes) {
@@ -65,8 +75,15 @@ const PostDetail = (props) => {
             <Title>{post.title}</Title>
             <Content>{post.content}</Content>
             <LikeButton onClick={handleLike}>
-                Like {post.likes}
+                Like 
             </LikeButton>
+            <MetadataContainer>
+                <div><strong>조회수:</strong> {post.views}</div>
+                <div><strong>작성 날짜:</strong> {post.created_at}</div>
+                <div><strong>수정 날짜:</strong> {post.updated_at}</div>
+                <div><strong>작성자 IP:</strong> {post.author_ip}</div>
+                <div><strong>URL:</strong> {window.location.href}</div>
+            </MetadataContainer>
         </PostContainer>
     ) : <p>Loading...</p>;
 };

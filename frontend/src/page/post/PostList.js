@@ -7,7 +7,7 @@ const PostList = () => {
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8000/posts/')
+        axios.get('http://localhost:8000/post/')
             .then(response => {
                 setPosts(response.data);
             })

@@ -17,7 +17,7 @@ const LikeButton = styled(Button)`
 const Post = ({ post, onLike }) => {
     const handleLike = () => {
         // 백엔드에 "좋아요" 요청을 보냅니다.
-        axios.post(`http://localhost:8000/posts/${post.no}/like`)
+        axios.post(`http://localhost:8000/post/${post.no}/like`)
             .then(response => {
                 // 부모 컴포넌트에게 "좋아요" 추가를 알립니다.
                 onLike(post.no);
@@ -30,7 +30,7 @@ const Post = ({ post, onLike }) => {
     return (
         <div>
             <Link to={`/post/${post.no}`}><h3>{post.title}</h3></Link>
-            <LikeButton variant="contained" onClick={handleLike}>Like {post.likes}</LikeButton>
+            <LikeButton variant="contained" onClick={handleLike}>Like </LikeButton>
         </div>
     );
 };
