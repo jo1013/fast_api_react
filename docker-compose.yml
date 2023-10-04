@@ -13,9 +13,9 @@ services:
 
   bulletin_board: #backend
     build:
-      context: ./bulletin_board_backend
+      context: ./backend/bulletin_board
       dockerfile: Dockerfile
-    container_name: fastapi_app
+    container_name: bulletin_board_fastapi
     environment:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -28,15 +28,15 @@ services:
       - db
       - redis
     volumes:
-      - ./bulletin_board_backend:/app
+      - ./backend/bulletin_board:/app
     ports:
       - "8000:8000"  # 호스트 포트와 컨테이너 포트를 매핑합니다.
 
   user: # 사용자 관련 backend
       build:
-        context: ./user_backend
+        context: ./backend/user
         dockerfile: Dockerfile
-      container_name: user_fastapi_app
+      container_name: user_fastapi
       environment:
         - DB_USER=${DB_USER}
         - DB_PASSWORD=${DB_PASSWORD}
@@ -49,7 +49,7 @@ services:
         - db
         - redis
       volumes:
-        - ./user_backend:/app
+        - ./user:/app
       ports:
         - "8001:8000"  # 사용자 관련 서비스는 8001 포트로 매핑합니다.
 
