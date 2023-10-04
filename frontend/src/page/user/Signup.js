@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import SignupForm from '../../component/UserForm/SignupForm';
 import { CircularProgress, Snackbar, Alert } from '@mui/material';
 import './Signup.css';
@@ -16,6 +17,7 @@ function Signup() {
         // const response = await signUpApi(formData);
         
         // For demo:
+        axios.post(`http://localhost:8001/user/signup`, formData)
         setTimeout(() => {
             setIsLoading(false);
             setAlertType("success");

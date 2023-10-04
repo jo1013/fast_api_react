@@ -49,7 +49,7 @@ services:
         - db
         - redis
       volumes:
-        - ./user:/app
+        - ./backend/user:/app
       ports:
         - "8001:8000"  # 사용자 관련 서비스는 8001 포트로 매핑합니다.
 

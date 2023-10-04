@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './SignupForm.css';
+import axios from 'axios';
+
 
 function SignupForm({ onSubmit }) {
     const [formData, setFormData] = useState({
@@ -10,6 +12,26 @@ function SignupForm({ onSubmit }) {
         confirmPassword: ''
     });
     const [errors, setErrors] = useState({});
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+    
+        if (validate()) {
+            try {
+                const response = await axios.post('http://localhost:8001/signup', formData);
+                if (response.data.success) {
+                    // 성공 처리
+                } else {
+                    // 실패 처리
+                    setErrors({ api: response.data.message });
+                }
+            } catch (error) {
+                // 에러 처리
+                setErrors({ api: "서버 에러" });
+            }
+        }
+    };
+    
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -32,13 +54,7 @@ function SignupForm({ onSubmit }) {
         return Object.keys(formErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
 
-        if (validate()) {
-            onSubmit(formData);
-        }
-    };
 
     return (
         <div className="signup-form">
