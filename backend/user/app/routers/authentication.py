@@ -1,9 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.schemas.user import UserCreate
 from app.dependencies.get_db import get_db
 from app.utils import get_password_hash, verify_password
+from app.utils.email_utils import send_email
+from ..models import User
+from ..schemas.user import UserFind
+from ..database import get_db
 
 router = APIRouter()
 
@@ -25,12 +29,27 @@ def login(username: str, password: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     
     return {"message": "Logged in successfully"}
-@router.post("/forgot-password")
-def forgot_password(email: str):
-    # 비밀번호 찾기 로직 구현
-    pass
 
-@router.post("/forgot-username")
-def forgot_username(email: str):
-    # 아이디 찾기 로직 구현
-    pass
+@router.post("/find-username/")
+def find_username(request: UserFind, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == request.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Email not found")
+    return {"username": user.username}
+
+
+@router.post("/forgot-password/")
+async def forgot_password(email: str, background_tasks: BackgroundTasks):
+    user = await User.get(email=email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # 실제 서비스에서는 랜덤 토큰 생성 및 저장 로직 필요
+    token = "sample_token"
+
+    # 이메일로 토큰 전송
+    subject = "Your password reset link"
+    content = f"Click the link below to reset your password: \n http://example.com/reset-password/{token}"
+    background_tasks.add_task(send_email, subject, email, content)
+
+    return {"detail": "Password reset email sent"}
