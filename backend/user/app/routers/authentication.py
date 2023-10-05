@@ -1,15 +1,27 @@
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
-from app.models.user import User
-from app.schemas.user import UserCreate
-from app.dependencies.get_db import get_db
+from app.schemas import UserCreate
 from app.utils import get_password_hash, verify_password
 from app.utils.email_utils import send_email
-from ..models import User
-from ..schemas.user import UserFind
-from ..database import get_db
+from app.models import User
+from app.schemas import UserFind
+from app.dependencies import get_db
+from app.utils import create_access_token
 
 router = APIRouter()
+
+
+@router.post("/login")
+def login(username: str, password: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+    
+    if not verify_password(password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+
+    access_token = create_access_token(data={"sub": user.username})
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("/signup")
 def signup(user: UserCreate, db: Session = Depends(get_db)):

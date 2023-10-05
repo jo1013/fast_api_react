@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from app.models import Post
 from app.routers import posts
-from app.dependencies.dependencies import get_db, SessionLocal
 from dotenv import load_dotenv
 
 load_dotenv()

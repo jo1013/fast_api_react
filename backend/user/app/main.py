@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from app.routers import authentication, user
+from app.routers import authentication, users
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.models.user_model import User
 
 app = FastAPI()
 

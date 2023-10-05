@@ -11,6 +11,8 @@ DB_PORT = os.getenv("DB_PORT") # 기본값으로 "5432" 설정
 DB_NAME = os.getenv("DB_NAME")  # 기본값으로 "postgres" 설정
 
 DATABASE_URL = f"postgresql://{str(DB_USER)}:{str(DB_PASSWORD)}@{str(DB_HOST)}:{str(DB_PORT)}/{str(DB_NAME)}"
+
+
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
