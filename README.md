@@ -71,7 +71,13 @@ CREATE TABLE post_likes (
 );
 ```
 
+실행방법
 
+docker-compose build
+
+docker-compose up
+
+docker-compose
 
 ## 프로젝트 구조 설명 
 

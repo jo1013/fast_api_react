@@ -17,7 +17,7 @@ function Signup() {
         // const response = await signUpApi(formData);
         
         // For demo:
-        axios.post(`http://localhost:8001/user/signup`, formData)
+        axios.post(`http://localhost:8001/auth/signup`, formData)
         setTimeout(() => {
             setIsLoading(false);
             setAlertType("success");

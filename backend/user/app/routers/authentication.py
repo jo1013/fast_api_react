@@ -1,67 +1,63 @@
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, status
 from sqlalchemy.orm import Session
-from app.schemas import UserCreate
-from app.utils import get_password_hash, verify_password
-from app.utils.email_utils import send_email
+from fastapi.security.oauth2 import OAuth2PasswordRequestForm
+from app.schemas import UserCreate, Token, UserFind, PasswordReset
 from app.models import User
-from app.schemas import UserFind
 from app.dependencies import get_db
-from app.utils import create_access_token
+from app.utils import (
+    get_password_hash, 
+    verify_password, 
+    create_access_token, 
+    generate_password_reset_token,
+    send_reset_password_email
+)
 
 router = APIRouter()
 
 
-@router.post("/login")
-def login(username: str, password: str, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == username).first()
-    if not user:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-    
-    if not verify_password(password, user.hashed_password):
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-
+@router.post("/login", response_model=Token)
+def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == form_data.username).first()
+    if user is None or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     access_token = create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.post("/signup")
-def signup(user: UserCreate, db: Session = Depends(get_db)):
+
+@router.post("/signup", response_model=UserCreate)
+def create_user(user: UserCreate, db: Session = Depends(get_db)):
+    user_in_db = db.query(User).filter(User.username == user.username).first()
+    if user_in_db:
+        raise HTTPException(status_code=400, detail="Username is already taken")
+    
     hashed_password = get_password_hash(user.password)
     new_user = User(username=user.username, email=user.email, hashed_password=hashed_password)
     db.add(new_user)
     db.commit()
+    db.refresh(new_user)
     return {"message": "User created successfully"}
 
-@router.post("/login")
-def login(username: str, password: str, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == username).first()
-    if not user:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-    
-    if not verify_password(password, user.hashed_password):
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-    
-    return {"message": "Logged in successfully"}
 
-@router.post("/find-username/")
+@router.post("/find-username", response_model=UserFind)
 def find_username(request: UserFind, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
     if not user:
         raise HTTPException(status_code=404, detail="Email not found")
-    return {"username": user.username}
+    return user
 
 
-@router.post("/forgot-password/")
-async def forgot_password(email: str, background_tasks: BackgroundTasks):
-    user = await User.get(email=email)
+@router.post("/forgot-password", response_model=PasswordReset)
+async def forgot_password(request: PasswordReset, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == request.email).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
     # 실제 서비스에서는 랜덤 토큰 생성 및 저장 로직 필요
-    token = "sample_token"
+    token = generate_password_reset_token(email=request.email)
+    background_tasks.add_task(send_reset_password_email, email=request.email, email_subject="Password recovery", token=token)
 
-    # 이메일로 토큰 전송
-    subject = "Your password reset link"
-    content = f"Click the link below to reset your password: \n http://example.com/reset-password/{token}"
-    background_tasks.add_task(send_email, subject, email, content)
-
-    return {"detail": "Password reset email sent"}
+    return {"message": "Password recovery email sent"}

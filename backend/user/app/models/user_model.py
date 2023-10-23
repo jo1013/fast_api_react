@@ -10,6 +10,6 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
-    nickname = Column(String)
+    display_name = Column(String)
     hashed_password = Column(String)
     # 필요한 다른 필드들...

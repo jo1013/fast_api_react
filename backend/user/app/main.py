@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import authentication, users
+from app.routers import authentication_router, users_router  
 from fastapi.middleware.cors import CORSMiddleware
 from app.models.user_model import User
 
@@ -12,15 +12,13 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],  # 실제 배포시 특정 오리진을 지정하는 것이 좋습니다.
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-
-app.include_router(authentication.router, prefix="/auth", tags=["authentication"])
-app.include_router(user.router, prefix="/users", tags=["users"])
-
+app.include_router(authentication_router, prefix="/auth", tags=["Authentication"])
+app.include_router(users_router, prefix="/users", tags=["Users"])
 

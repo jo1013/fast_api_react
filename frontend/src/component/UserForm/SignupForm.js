@@ -1,3 +1,4 @@
+//  fronend/src/component/UserForm/SignupForm.js
 import React, { useState } from 'react';
 import './SignupForm.css';
 import axios from 'axios';
@@ -6,7 +7,7 @@ import axios from 'axios';
 function SignupForm({ onSubmit }) {
     const [formData, setFormData] = useState({
         username: '',
-        nickname: '',
+        displayName: '',
         email: '',
         password: '',
         confirmPassword: ''
@@ -18,9 +19,10 @@ function SignupForm({ onSubmit }) {
     
         if (validate()) {
             try {
-                const response = await axios.post('http://localhost:8001/signup', formData);
+                const response = await axios.post('http://localhost:8001/auth/signup', formData);
                 if (response.data.success) {
-                    // 성공 처리
+                    alert('회원가입이 성공적으로 완료되었습니다!'); // 사용자에게 알림
+                    history.push('/login'); // 로그인 페이지 또는 다른 페이지로 리다이렉트
                 } else {
                     // 실패 처리
                     setErrors({ api: response.data.message });
@@ -45,7 +47,7 @@ function SignupForm({ onSubmit }) {
         let formErrors = {};
 
         if (!formData.username) formErrors.username = "이름을 입력하세요.";
-        if (!formData.nickname) formErrors.nickname = "닉네임을 입력하세요.";
+        if (!formData.displayname) formErrors.displayname = "닉네임을 입력하세요.";
         if (!formData.email) formErrors.email = "이메일을 입력하세요.";
         if (!formData.password) formErrors.password = "비밀번호를 입력하세요.";
         if (formData.password !== formData.confirmPassword) formErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
@@ -75,12 +77,12 @@ function SignupForm({ onSubmit }) {
                     <label>닉네임</label>
                     <input 
                         type="text" 
-                        name="nickname" 
-                        value={formData.nickname} 
+                        name="displayname" 
+                        value={formData.displayname} 
                         onChange={handleChange} 
                         required
                     />
-                    {errors.nickname && <p className="error">{errors.nickname}</p>}
+                    {errors.displayname && <p className="error">{errors.displayname}</p>}
                 </div>
                 <div className="input-group">
                     <label>이메일</label>
@@ -116,7 +118,7 @@ function SignupForm({ onSubmit }) {
                     {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
                 </div>
                 <div className="input-group">
-                    <button type="submit">회원가입</button>
+                    <button type="submit">완료</button>
                 </div>
             </form>
         </div>
